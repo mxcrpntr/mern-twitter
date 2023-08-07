@@ -30,6 +30,21 @@ if (!isProduction) {
     app.use(cors());
 } 
 
+// ...
+app.use(
+  csurf({
+    cookie: {
+      secure: isProduction,
+      sameSite: isProduction && "Lax",
+      httpOnly: true
+    }
+  })
+);
+
+app.use('/api/users', usersRouter);
+app.use('/api/tweets', tweetsRouter);
+app.use('/api/csrf', csrfRouter);
+
 if (isProduction) {
   const path = require('path');
   // Serve the frontend's index.html file at the root route
@@ -51,21 +66,6 @@ if (isProduction) {
     );
   });
 }
-
-// ...
-app.use(
-  csurf({
-    cookie: {
-      secure: isProduction,
-      sameSite: isProduction && "Lax",
-      httpOnly: true
-    }
-  })
-);
-
-app.use('/api/users', usersRouter);
-app.use('/api/tweets', tweetsRouter);
-app.use('/api/csrf', csrfRouter);
 
 app.use((req, res, next) => {
     const err = new Error('Not Found');
